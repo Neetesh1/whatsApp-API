@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+require('dotenv').config({ path: './config/.env' });
 
 const app = express();
 const server = http.createServer(app);
@@ -21,9 +21,16 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Database connection (configuration to be set in .env)
-const pool = new Pool({
+console.log('DB Connection Details:', {
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: typeof process.env.DB_PASSWORD === 'string' ? 'Password is a string' : 'Password is not a string',
+  port: process.env.DB_PORT
+});
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: 'localhost', // Override to localhost since server might not resolve 'postgres' directly
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
@@ -40,6 +47,17 @@ pool.query('SELECT NOW()', (err, res) => {
 
 // Secret key for JWT (to be set in .env)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Temporary debug endpoint to list all users (remove in production)
+app.get('/api/debug/users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, username, email, role, created_at FROM users');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 // Placeholder for WhatsApp Business API webhook
 app.post('/webhook/whatsapp', async (req, res) => {
