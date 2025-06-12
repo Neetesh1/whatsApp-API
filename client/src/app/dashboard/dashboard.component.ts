@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -7,6 +7,12 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+declare global {
+  interface JQuery {
+    DataTable: (options?: any) => JQuery;
+  }
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -14,10 +20,12 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   tickets: any[] = [];
   private socket: any;
   private socketSubscription: Subscription | undefined;
+  newUser: { username: string, password: string, role: string } = { username: '', password: '', role: 'user' };
+  userRole: string = '';
 
   constructor(
     private http: HttpClient,
@@ -28,6 +36,46 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.fetchTickets();
     this.setupSocketConnection();
+    this.loadUserRole();
+  }
+
+  loadUserRole() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.userRole = payload.role || 'user';
+      } catch (e) {
+        console.error('Error decoding token:', e);
+        this.userRole = 'user';
+      }
+    }
+  }
+
+  isAdmin(): boolean {
+    return this.userRole === 'admin';
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (this.tickets.length > 0) {
+        this.initializeDataTable();
+      }
+    }, 0);
+  }
+
+  initializeDataTable() {
+    const table = $('#ticketsTable');
+    if (table.length) {
+      table.DataTable({
+        pageLength: 10,
+        responsive: true,
+        order: [[0, 'desc']],
+        columnDefs: [
+          { orderable: false, targets: 5 }
+        ]
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -54,6 +102,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.http.get('http://localhost:3000/api/tickets', { headers }).subscribe({
       next: (response: any) => {
         this.tickets = response;
+        setTimeout(() => {
+          this.initializeDataTable();
+        }, 0);
       },
       error: (error) => {
         this.toastr.error('Failed to fetch tickets. Please try again.', 'Error');
@@ -70,12 +121,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.socket.on('newTicket', (ticket: any) => {
       this.tickets.unshift(ticket);
       this.toastr.info('New ticket received', 'New Ticket');
+      setTimeout(() => {
+        this.initializeDataTable();
+      }, 0);
     });
     this.socket.on('ticketUpdated', (updatedTicket: any) => {
       const index = this.tickets.findIndex(t => t.id === updatedTicket.id);
       if (index !== -1) {
         this.tickets[index] = updatedTicket;
         this.toastr.info(`Ticket ${updatedTicket.id} updated`, 'Ticket Update');
+        setTimeout(() => {
+          this.initializeDataTable();
+        }, 0);
       }
     });
   }
@@ -118,5 +175,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
     localStorage.removeItem('token');
     this.toastr.success('Logged out successfully', 'Success');
     this.router.navigate(['/login']);
+  }
+
+  createUser() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.toastr.error('No authentication token found. Please login again.', 'Error');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    this.http.post('http://localhost:3000/api/auth/register', this.newUser, { headers }).subscribe({
+      next: (response: any) => {
+        this.toastr.success(`User ${response.username} created successfully`, 'Success');
+        this.newUser = { username: '', password: '', role: 'user' };
+      },
+      error: (error) => {
+        this.toastr.error(error.error.error || 'Failed to create user. Please try again.', 'Error');
+        console.error('Error creating user:', error);
+        if (error.status === 401 || error.status === 403) {
+          this.router.navigate(['/login']);
+        }
+      }
+    });
   }
 }

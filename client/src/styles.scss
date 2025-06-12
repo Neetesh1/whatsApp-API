@@ -1,1 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
+
+// Import AdminLTE SCSS files
+@import "../node_modules/admin-lte/dist/css/adminlte.css";
+@import "../node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css";
+
+// Custom overrides for AdminLTE
+.main-sidebar {
+  height: 100vh;
+  position: fixed;
+  top: 0;
+}
+
+.content-wrapper {
+  margin-left: 250px;
+}
+
+@media (max-width: 991.98px) {
+  .content-wrapper {
+    margin-left: 0;
+  }
+}
+
+// Dark mode support
+.dark-mode .content-wrapper {
+  background-color: #343a40;
+  color: #fff;
+}

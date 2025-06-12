@@ -1,36 +1,85 @@
-<div class="dashboard-container">
-  <h2>Ticket Dashboard</h2>
-  <div class="logout-button">
-    <button (click)="logout()">Logout</button>
-  </div>
-  <div *ngIf="tickets.length === 0" class="no-tickets">
-    <p>No tickets available.</p>
-  </div>
-  <div *ngIf="tickets.length > 0" class="tickets-table">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Sender</th>
-          <th>Message</th>
-          <th>Status</th>
-          <th>Created At</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let ticket of tickets">
-          <td>{{ ticket.id }}</td>
-          <td>{{ ticket.sender }}</td>
-          <td>{{ ticket.message }}</td>
-          <td>{{ ticket.status }}</td>
-          <td>{{ ticket.created_at | date:'short' }}</td>
-          <td>
-            <button (click)="viewTicket(ticket.id)">View Details</button>
-            <button *ngIf="ticket.status === 'open'" (click)="assignTicket(ticket.id)">Assign to Me</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+<!-- Content Header (Page header) -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Ticket Dashboard</h1>
+      </div>
+    </div>
   </div>
 </div>
+<!-- /.content-header -->
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <!-- User Management Card (Admin Only) -->
+    <div class="card" *ngIf="isAdmin()">
+      <div class="card-header">
+        <h3 class="card-title">User Management</h3>
+      </div>
+      <div class="card-body">
+        <h5>Create New User</h5>
+        <form #userForm="ngForm" (ngSubmit)="createUser()">
+          <div class="form-group">
+            <label for="newUsername">Username:</label>
+            <input type="text" class="form-control" id="newUsername" name="newUsername" [(ngModel)]="newUser.username" required>
+          </div>
+          <div class="form-group">
+            <label for="newPassword">Password:</label>
+            <input type="password" class="form-control" id="newPassword" name="newPassword" [(ngModel)]="newUser.password" required>
+          </div>
+          <div class="form-group">
+            <label for="newRole">Role:</label>
+            <select class="form-control" id="newRole" name="newRole" [(ngModel)]="newUser.role">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="manager">Manager</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary mt-3" [disabled]="!userForm.valid">Create User</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tickets Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Tickets</h3>
+      </div>
+      <div class="card-body" *ngIf="tickets.length === 0">
+        <div class="alert alert-info text-center">
+          <p>No tickets available.</p>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0" *ngIf="tickets.length > 0">
+        <table id="ticketsTable" class="table table-hover text-nowrap">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Sender</th>
+              <th>Message</th>
+              <th>Status</th>
+              <th>Created At</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ticket of tickets">
+              <td>{{ ticket.id }}</td>
+              <td>{{ ticket.sender }}</td>
+              <td>{{ ticket.message }}</td>
+              <td>{{ ticket.status }}</td>
+              <td>{{ ticket.created_at | date:'short' }}</td>
+              <td>
+                <button class="btn btn-primary btn-sm mr-2" (click)="viewTicket(ticket.id)">View Details</button>
+                <button *ngIf="ticket.status === 'open'" class="btn btn-success btn-sm" (click)="assignTicket(ticket.id)">Assign to Me</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /.content -->

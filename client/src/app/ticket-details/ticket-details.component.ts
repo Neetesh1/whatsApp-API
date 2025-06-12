@@ -17,6 +17,7 @@ export class TicketDetailsComponent implements OnInit {
   replies: any[] = [];
   replyText: string = '';
   ticketId: number | null = null;
+  userRole: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -33,6 +34,39 @@ export class TicketDetailsComponent implements OnInit {
         this.fetchTicketDetails();
       }
     });
+    this.loadUserRole();
+  }
+
+  loadUserRole() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.userRole = payload.role || 'user';
+      } catch (e) {
+        console.error('Error decoding token:', e);
+        this.userRole = 'user';
+      }
+    }
+  }
+
+  isAdmin(): boolean {
+    return this.userRole === 'admin';
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'open':
+        return 'success';
+      case 'in_progress':
+        return 'warning';
+      case 'responded':
+        return 'info';
+      case 'closed':
+        return 'danger';
+      default:
+        return 'secondary';
+    }
   }
 
   fetchTicketDetails() {
@@ -131,5 +165,11 @@ export class TicketDetailsComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/dashboard']);
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.toastr.success('Logged out successfully', 'Success');
+    this.router.navigate(['/login']);
   }
 }

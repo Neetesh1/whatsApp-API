@@ -1,44 +1,88 @@
-<div class="ticket-details-container">
-  <h2>Ticket Details</h2>
-  <div class="back-button">
-    <button (click)="goBack()">Back to Dashboard</button>
-  </div>
-  <div *ngIf="ticket; else loading" class="ticket-info">
-    <div class="ticket-header">
-      <h3>Ticket ID: {{ ticket.id }}</h3>
-      <p>Status: <span class="status-{{ ticket.status }}">{{ ticket.status | titlecase }}</span></p>
-    </div>
-    <div class="ticket-body">
-      <p><strong>Sender:</strong> {{ ticket.sender }}</p>
-      <p><strong>Message:</strong> {{ ticket.message }}</p>
-      <p><strong>Created At:</strong> {{ ticket.created_at | date:'short' }}</p>
-      <p *ngIf="ticket.assigned_to"><strong>Assigned To:</strong> User ID {{ ticket.assigned_to }}</p>
-      <p *ngIf="ticket.closed_at"><strong>Closed At:</strong> {{ ticket.closed_at | date:'short' }}</p>
-    </div>
-    <div *ngIf="replies.length > 0" class="replies-section">
-      <h4>Replies</h4>
-      <div *ngFor="let reply of replies" class="reply">
-        <p><strong>User ID {{ reply.user_id }}:</strong> {{ reply.reply }}</p>
-        <p><small>Posted on: {{ reply.created_at | date:'short' }}</small></p>
+<!-- Content Header (Page header) -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Ticket Details</h1>
       </div>
-    </div>
-    <div *ngIf="ticket.status !== 'closed'" class="action-section">
-      <div class="reply-form">
-        <h4>Reply to Ticket</h4>
-        <textarea [(ngModel)]="replyText" placeholder="Type your reply here..." rows="4" cols="50"></textarea>
-        <button (click)="submitReply()" [disabled]="!replyText">Send Reply</button>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#" (click)="goBack()">Dashboard</a></li>
+          <li class="breadcrumb-item active">Ticket Details</li>
+        </ol>
       </div>
-      <div class="close-ticket">
-        <button (click)="closeTicket()">Close Ticket</button>
-      </div>
-    </div>
-    <div *ngIf="ticket.status === 'closed'" class="closed-message">
-      <p>This ticket is closed. No further actions can be taken.</p>
     </div>
   </div>
-  <ng-template #loading>
-    <div class="loading">
-      <p>Loading ticket details...</p>
-    </div>
-  </ng-template>
 </div>
+<!-- /.content-header -->
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Ticket Information</h3>
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" (click)="goBack()">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+          </button>
+        </div>
+      </div>
+      <div class="card-body" *ngIf="ticket; else loading">
+        <div class="row">
+          <div class="col-md-6">
+            <h3>Ticket ID: {{ ticket.id }}</h3>
+            <p>Status: <span class="badge badge-{{ getStatusBadgeClass(ticket.status) }}">{{ ticket.status | titlecase }}</span></p>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-md-6">
+            <p><strong>Sender:</strong> {{ ticket.sender }}</p>
+            <p><strong>Message:</strong> {{ ticket.message }}</p>
+            <p><strong>Created At:</strong> {{ ticket.created_at | date:'short' }}</p>
+            <p *ngIf="ticket.assigned_to"><strong>Assigned To:</strong> User ID {{ ticket.assigned_to }}</p>
+            <p *ngIf="ticket.closed_at"><strong>Closed At:</strong> {{ ticket.closed_at | date:'short' }}</p>
+          </div>
+        </div>
+        <div class="mt-4" *ngIf="replies.length > 0">
+          <h4>Replies</h4>
+          <div class="timeline">
+            <div *ngFor="let reply of replies" class="timeline-item">
+              <span class="time"><i class="fas fa-clock"></i> {{ reply.created_at | date:'short' }}</span>
+              <h3 class="timeline-header"><strong>User ID {{ reply.user_id }}</strong></h3>
+              <div class="timeline-body">
+                {{ reply.reply }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4" *ngIf="ticket.status !== 'closed'">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Reply to Ticket</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <textarea class="form-control" [(ngModel)]="replyText" placeholder="Type your reply here..." rows="4"></textarea>
+              </div>
+              <button class="btn btn-primary" (click)="submitReply()" [disabled]="!replyText">Send Reply</button>
+              <button class="btn btn-danger float-right" (click)="closeTicket()">Close Ticket</button>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-warning mt-3" *ngIf="ticket.status === 'closed'">
+          <p>This ticket is closed. No further actions can be taken.</p>
+        </div>
+      </div>
+      <ng-template #loading>
+        <div class="card-body text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <p>Loading ticket details...</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</section>
+<!-- /.content -->
