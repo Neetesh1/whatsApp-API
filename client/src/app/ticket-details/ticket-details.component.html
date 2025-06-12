@@ -1,0 +1,44 @@
+<div class="ticket-details-container">
+  <h2>Ticket Details</h2>
+  <div class="back-button">
+    <button (click)="goBack()">Back to Dashboard</button>
+  </div>
+  <div *ngIf="ticket; else loading" class="ticket-info">
+    <div class="ticket-header">
+      <h3>Ticket ID: {{ ticket.id }}</h3>
+      <p>Status: <span class="status-{{ ticket.status }}">{{ ticket.status | titlecase }}</span></p>
+    </div>
+    <div class="ticket-body">
+      <p><strong>Sender:</strong> {{ ticket.sender }}</p>
+      <p><strong>Message:</strong> {{ ticket.message }}</p>
+      <p><strong>Created At:</strong> {{ ticket.created_at | date:'short' }}</p>
+      <p *ngIf="ticket.assigned_to"><strong>Assigned To:</strong> User ID {{ ticket.assigned_to }}</p>
+      <p *ngIf="ticket.closed_at"><strong>Closed At:</strong> {{ ticket.closed_at | date:'short' }}</p>
+    </div>
+    <div *ngIf="replies.length > 0" class="replies-section">
+      <h4>Replies</h4>
+      <div *ngFor="let reply of replies" class="reply">
+        <p><strong>User ID {{ reply.user_id }}:</strong> {{ reply.reply }}</p>
+        <p><small>Posted on: {{ reply.created_at | date:'short' }}</small></p>
+      </div>
+    </div>
+    <div *ngIf="ticket.status !== 'closed'" class="action-section">
+      <div class="reply-form">
+        <h4>Reply to Ticket</h4>
+        <textarea [(ngModel)]="replyText" placeholder="Type your reply here..." rows="4" cols="50"></textarea>
+        <button (click)="submitReply()" [disabled]="!replyText">Send Reply</button>
+      </div>
+      <div class="close-ticket">
+        <button (click)="closeTicket()">Close Ticket</button>
+      </div>
+    </div>
+    <div *ngIf="ticket.status === 'closed'" class="closed-message">
+      <p>This ticket is closed. No further actions can be taken.</p>
+    </div>
+  </div>
+  <ng-template #loading>
+    <div class="loading">
+      <p>Loading ticket details...</p>
+    </div>
+  </ng-template>
+</div>
