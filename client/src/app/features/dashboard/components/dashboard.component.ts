@@ -116,8 +116,8 @@ interface DashboardStats {
                     <span class="badge" [ngClass]="{
                       'bg-warning': ticket.status === 'open',
                       'bg-info': ticket.status === 'in_progress',
-                      'bg-success': ticket.status === 'resolved',
-                      'bg-secondary': ticket.status === 'closed'
+                      'bg-success': ticket.status === 'closed',
+                      'bg-secondary': ticket.status === 'assigned'
                     }">
                       {{ ticket.status | titlecase }}
                     </span>

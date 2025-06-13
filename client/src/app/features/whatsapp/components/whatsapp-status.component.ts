@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WhatsAppService, WhatsAppStatus } from '../../core/services/whatsapp.service';
-import { SocketService } from '../../core/services/socket.service';
+import { WhatsAppService, WhatsAppStatus } from '../../../core/services/whatsapp.service';
+import { SocketService } from '../../../core/services/socket.service';
 import { Subscription } from 'rxjs';
 
 interface ConnectionMetric {
@@ -69,15 +69,18 @@ interface ConnectionLog {
                     <div class="mt-2 mb-3">
                       <i class="fas" [ngClass]="whatsappStatus?.connected ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" style="font-size: 4rem;"></i>
                     </div>
-                    <h4 [ngClass]="whatsappStatus?.connected ? 'text-success' : 'text-danger'">
-                      {{ whatsappStatus?.connected ? 'Connected' : 'Disconnected' }}
-                    </h4>
-                    <p class="text-muted" *ngIf="whatsappStatus?.connected && whatsappStatus?.phone_number">
-                      {{ whatsappStatus.phone_number }}
-                    </p>
-                    <p class="text-muted" *ngIf="whatsappStatus?.connected && whatsappStatus?.connection_time">
-                      Connected since {{ whatsappStatus.connection_time | date:'medium' }}
-                    </p>
+                    <div class="text-success" *ngIf="whatsappStatus?.connected">
+                      <i class="fas fa-check-circle me-2"></i>
+                      Connected
+                    </div>
+                    <div class="text-danger" *ngIf="!whatsappStatus?.connected">
+                      <i class="fas fa-times-circle me-2"></i>
+                      Disconnected
+                    </div>
+                    <div class="text-muted small" *ngIf="whatsappStatus?.connected">
+                      <div>Phone: {{ whatsappStatus?.phone_number || 'N/A' }}</div>
+                      <div>Connected since {{ whatsappStatus?.connection_time | date:'medium' }}</div>
+                    </div>
                     <p class="text-danger" *ngIf="!whatsappStatus?.connected">
                       {{ disconnectionReason }}
                     </p>
@@ -209,12 +212,12 @@ export class WhatsappStatusComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.whatsappService.getConnectionStatus().subscribe({
-        next: (status) => {
+        next: (status: WhatsAppStatus) => {
           this.whatsappStatus = status;
           this.updateMetrics();
           this.isLoading = false;
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error loading WhatsApp status:', error);
           this.whatsappStatus = { connected: false };
           this.disconnectionReason = 'Failed to connect to API';
@@ -226,10 +229,10 @@ export class WhatsappStatusComponent implements OnInit, OnDestroy {
     // Load messages for metrics (mock data for now)
     this.subscriptions.push(
       this.whatsappService.getMessages().subscribe({
-        next: (messages) => {
+        next: (messages: any[]) => {
           this.updateMetricsFromMessages(messages);
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error loading messages:', error);
         }
       })
@@ -249,7 +252,7 @@ export class WhatsappStatusComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       action.subscribe({
-        next: (response) => {
+        next: (response: any) => {
           this.isConnecting = false;
           this.addConnectionLog(
             this.whatsappStatus?.connected ? 'Disconnection' : 'Connection Established',
@@ -258,7 +261,7 @@ export class WhatsappStatusComponent implements OnInit, OnDestroy {
           );
           this.loadWhatsAppStatus(); // Refresh status
         },
-        error: (error) => {
+        error: (error: any) => {
           this.isConnecting = false;
           this.addConnectionLog(
             'Connection Error',
@@ -276,7 +279,7 @@ export class WhatsappStatusComponent implements OnInit, OnDestroy {
 
     // Listen for WhatsApp status changes
     this.subscriptions.push(
-      this.socketService.onWhatsAppStatusChange().subscribe((status) => {
+      this.socketService.onWhatsAppStatusChange().subscribe((status: WhatsAppStatus) => {
         this.whatsappStatus = status;
         this.addConnectionLog(
           status.connected ? 'Connection Established' : 'Disconnection',
