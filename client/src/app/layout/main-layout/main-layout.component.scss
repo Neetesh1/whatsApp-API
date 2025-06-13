@@ -1,0 +1,146 @@
+/* Main wrapper layout fixes */
+.wrapper {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Content wrapper positioning */
+.content-wrapper {
+  margin-left: 250px; /* Default sidebar width */
+  min-height: calc(100vh - 3.5rem); /* Account for header height */
+  background-color: #f4f6f9;
+  padding: 0;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Header positioning */
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+}
+
+/* Sidebar positioning */
+app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1020;
+  width: 250px;
+}
+
+/* Footer positioning */
+app-footer {
+  margin-left: 250px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Adjust content for fixed header */
+.content-wrapper {
+  margin-top: 3.5rem; /* Header height */
+  padding-top: 0;
+}
+
+/* Content header styling */
+.content-header {
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+}
+
+.content-header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #495057;
+}
+
+/* Main content section */
+.content {
+  padding: 0.75rem 1rem 1rem 1rem;
+}
+
+/* Responsive behavior for collapsed sidebar */
+@media (max-width: 991.98px) {
+  .content-wrapper {
+    margin-left: 0;
+  }
+
+  app-footer {
+    margin-left: 0;
+  }
+
+  /* When sidebar is open on mobile */
+  .sidebar-open .content-wrapper {
+    margin-left: 0;
+  }
+
+  .sidebar-open app-footer {
+    margin-left: 0;
+  }
+}
+
+/* Sidebar collapse states */
+body.sidebar-collapse .content-wrapper {
+  margin-left: 4.6rem; /* Collapsed sidebar width */
+}
+
+body.sidebar-collapse app-footer {
+  margin-left: 4.6rem;
+}
+
+/* Sidebar mini state */
+body.sidebar-mini .content-wrapper {
+  margin-left: 4.6rem;
+}
+
+body.sidebar-mini app-footer {
+  margin-left: 4.6rem;
+}
+
+/* Fix for breadcrumb */
+.breadcrumb {
+  background-color: transparent;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.breadcrumb-item a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+}
+
+/* Ensure proper z-index stacking */
+.main-header {
+  z-index: 1030;
+}
+
+.main-sidebar {
+  z-index: 1020;
+}
+
+.content-wrapper {
+  z-index: 1000;
+}
+
+/* Animation for smooth transitions */
+.content-wrapper,
+app-footer {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Fix for container-fluid padding */
+.container-fluid {
+  padding-left: 15px;
+  padding-right: 15px;
+}

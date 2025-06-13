@@ -2,24 +2,40 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+interface DashboardStats {
+  totalTickets: number;
+  openTickets: number;
+  closedTickets: number;
+  whatsappMessages: number;
+}
+
+interface RecentTicket {
+  id: number;
+  subject: string;
+  status: string;
+  priority: string;
+  created: string;
+  customer: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <!-- Dashboard Stats -->
     <div class="row">
+      <!-- Stats Cards -->
       <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
           <div class="inner">
-            <h3>{{ totalTickets }}</h3>
+            <h3>{{ stats.totalTickets }}</h3>
             <p>Total Tickets</p>
           </div>
           <div class="icon">
             <i class="fas fa-ticket-alt"></i>
           </div>
-          <a [routerLink]="['/tickets/all']" class="small-box-footer">
-            View All <i class="fas fa-arrow-circle-right"></i>
+          <a routerLink="/tickets" class="small-box-footer">
+            More info <i class="fas fa-arrow-circle-right"></i>
           </a>
         </div>
       </div>
@@ -27,13 +43,13 @@ import { RouterModule } from '@angular/router';
       <div class="col-lg-3 col-6">
         <div class="small-box bg-success">
           <div class="inner">
-            <h3>{{ resolvedTickets }}<sup style="font-size: 20px">%</sup></h3>
-            <p>Resolution Rate</p>
+            <h3>{{ stats.openTickets }}</h3>
+            <p>Open Tickets</p>
           </div>
           <div class="icon">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-folder-open"></i>
           </div>
-          <a href="#" class="small-box-footer">
+          <a routerLink="/tickets/open" class="small-box-footer">
             More info <i class="fas fa-arrow-circle-right"></i>
           </a>
         </div>
@@ -42,13 +58,13 @@ import { RouterModule } from '@angular/router';
       <div class="col-lg-3 col-6">
         <div class="small-box bg-warning">
           <div class="inner">
-            <h3>{{ activeChats }}</h3>
-            <p>Active Conversations</p>
+            <h3>{{ stats.closedTickets }}</h3>
+            <p>Closed Tickets</p>
           </div>
           <div class="icon">
-            <i class="fas fa-comments"></i>
+            <i class="fas fa-check-circle"></i>
           </div>
-          <a href="#" class="small-box-footer">
+          <a routerLink="/tickets/closed" class="small-box-footer">
             More info <i class="fas fa-arrow-circle-right"></i>
           </a>
         </div>
@@ -57,33 +73,28 @@ import { RouterModule } from '@angular/router';
       <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
           <div class="inner">
-            <h3>{{ avgResponseTime }}</h3>
-            <p>Avg. Response Time (min)</p>
+            <h3>{{ stats.whatsappMessages }}</h3>
+            <p>WhatsApp Messages</p>
           </div>
           <div class="icon">
-            <i class="fas fa-clock"></i>
+            <i class="fab fa-whatsapp"></i>
           </div>
-          <a href="#" class="small-box-footer">
+          <a routerLink="/whatsapp" class="small-box-footer">
             More info <i class="fas fa-arrow-circle-right"></i>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Main row -->
     <div class="row">
-      <!-- Left col -->
-      <section class="col-lg-7">
-        <!-- Recent Tickets -->
+      <!-- Recent Tickets -->
+      <div class="col-md-8">
         <div class="card">
-          <div class="card-header border-transparent">
+          <div class="card-header">
             <h3 class="card-title">Recent Tickets</h3>
             <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-              <button type="button" class="btn btn-tool" data-lte-dismiss="card-remove">
-                <i class="fas fa-times"></i>
+              <button type="button" class="btn btn-tool" (click)="loadRecentTickets()">
+                <i class="fas fa-sync-alt"></i>
               </button>
             </div>
           </div>
@@ -92,171 +103,180 @@ import { RouterModule } from '@angular/router';
               <table class="table m-0">
                 <thead>
                   <tr>
-                    <th>Ticket ID</th>
+                    <th>ID</th>
+                    <th>Subject</th>
                     <th>Customer</th>
                     <th>Status</th>
-                    <th>Subject</th>
+                    <th>Priority</th>
+                    <th>Created</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let ticket of recentTickets">
-                    <td><a href="#">{{ ticket.id }}</a></td>
+                    <td>{{ ticket.id }}</td>
+                    <td>{{ ticket.subject }}</td>
                     <td>{{ ticket.customer }}</td>
                     <td>
-                      <span class="badge" [ngClass]="getStatusBadgeClass(ticket.status)">
+                      <span class="badge"
+                            [class.badge-success]="ticket.status === 'Open'"
+                            [class.badge-warning]="ticket.status === 'In Progress'"
+                            [class.badge-secondary]="ticket.status === 'Closed'">
                         {{ ticket.status }}
                       </span>
                     </td>
-                    <td>{{ ticket.subject }}</td>
+                    <td>
+                      <span class="badge"
+                            [class.badge-danger]="ticket.priority === 'High'"
+                            [class.badge-warning]="ticket.priority === 'Medium'"
+                            [class.badge-info]="ticket.priority === 'Low'">
+                        {{ ticket.priority }}
+                      </span>
+                    </td>
+                    <td>{{ ticket.created }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
           <div class="card-footer clearfix">
-            <a [routerLink]="['/tickets/all']" class="btn btn-sm btn-info float-start">View All Tickets</a>
-            <a [routerLink]="['/tickets/create']" class="btn btn-sm btn-primary float-end">Create New Ticket</a>
+            <a routerLink="/tickets" class="btn btn-sm btn-info float-right">View All Tickets</a>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- Right col -->
-      <section class="col-lg-5">
-        <!-- WhatsApp Status -->
+      <!-- WhatsApp Status -->
+      <div class="col-md-4">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">WhatsApp Connection Status</h3>
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-              <button type="button" class="btn btn-tool" data-lte-dismiss="card-remove">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
+            <h3 class="card-title">WhatsApp Status</h3>
           </div>
           <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-              <p class="text-success d-flex">
-                <i class="fab fa-whatsapp me-2"></i>
-                <span>Connection Status</span>
-              </p>
-              <p class="d-flex flex-column text-end">
-                <span class="font-weight-bold">
-                  <i class="fas fa-circle text-success"></i> Online
-                </span>
-                <span class="text-muted">Since {{ connectionTime }}</span>
-              </p>
+            <div class="info-box">
+              <span class="info-box-icon bg-success elevation-1">
+                <i class="fab fa-whatsapp"></i>
+              </span>
+              <div class="info-box-content">
+                <span class="info-box-text">Connection</span>
+                <span class="info-box-number">Connected</span>
+              </div>
             </div>
-            <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-              <p class="text-info d-flex">
-                <i class="fas fa-paper-plane me-2"></i>
-                <span>Messages Sent Today</span>
-              </p>
-              <p class="d-flex flex-column text-end">
-                <span class="font-weight-bold">{{ messagesSent }}</span>
-              </p>
+
+            <div class="info-box">
+              <span class="info-box-icon bg-info elevation-1">
+                <i class="fas fa-comments"></i>
+              </span>
+              <div class="info-box-content">
+                <span class="info-box-text">Today's Messages</span>
+                <span class="info-box-number">{{ stats.whatsappMessages }}</span>
+              </div>
             </div>
-            <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-              <p class="text-warning d-flex">
-                <i class="fas fa-inbox me-2"></i>
-                <span>Messages Received Today</span>
-              </p>
-              <p class="d-flex flex-column text-end">
-                <span class="font-weight-bold">{{ messagesReceived }}</span>
-              </p>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <p class="text-danger d-flex">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <span>Failed Messages</span>
-              </p>
-              <p class="d-flex flex-column text-end">
-                <span class="font-weight-bold">{{ failedMessages }}</span>
-              </p>
-            </div>
+
+            <a routerLink="/whatsapp/status" class="btn btn-primary btn-block">
+              <i class="fab fa-whatsapp mr-2"></i>
+              Manage WhatsApp
+            </a>
           </div>
         </div>
 
-        <!-- Recently Added Contacts -->
+        <!-- Quick Actions -->
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Recent Contacts</h3>
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-              <button type="button" class="btn btn-tool" data-lte-dismiss="card-remove">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
+            <h3 class="card-title">Quick Actions</h3>
           </div>
-          <div class="card-body p-0">
-            <ul class="users-list clearfix">
-              <li *ngFor="let contact of recentContacts">
-                <img [src]="contact.avatar" alt="User Image">
-                <a class="users-list-name" href="#">{{ contact.name }}</a>
-                <span class="users-list-date">{{ contact.joinedDate }}</span>
-              </li>
-            </ul>
-          </div>
-          <div class="card-footer text-center">
-            <a href="#">View All Contacts</a>
+          <div class="card-body">
+            <a routerLink="/tickets/create" class="btn btn-success btn-block mb-2">
+              <i class="fas fa-plus mr-2"></i>
+              Create New Ticket
+            </a>
+            <a routerLink="/whatsapp/templates" class="btn btn-info btn-block mb-2">
+              <i class="fas fa-file-alt mr-2"></i>
+              Message Templates
+            </a>
+            <a routerLink="/settings" class="btn btn-secondary btn-block">
+              <i class="fas fa-cog mr-2"></i>
+              System Settings
+            </a>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   `,
-  styles: []
+  styles: [`
+    .small-box {
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .card {
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .info-box {
+      margin-bottom: 15px;
+    }
+  `]
 })
 export class DashboardComponent implements OnInit {
-  // Dashboard metrics
-  totalTickets: number = 150;
-  resolvedTickets: number = 78;
-  activeChats: number = 24;
-  avgResponseTime: number = 15;
+  stats: DashboardStats = {
+    totalTickets: 0,
+    openTickets: 0,
+    closedTickets: 0,
+    whatsappMessages: 0
+  };
 
-  // WhatsApp metrics
-  connectionTime: string = '2 hours ago';
-  messagesSent: number = 356;
-  messagesReceived: number = 421;
-  failedMessages: number = 12;
-
-  // Recent tickets
-  recentTickets = [
-    { id: 'TKT-2021', customer: 'John Doe', status: 'Open', subject: 'Unable to send media' },
-    { id: 'TKT-2020', customer: 'Jane Smith', status: 'Closed', subject: 'Delivery confirmation issue' },
-    { id: 'TKT-2019', customer: 'Alice Johnson', status: 'Pending', subject: 'Payment not received' },
-    { id: 'TKT-2018', customer: 'Bob Wilson', status: 'Open', subject: 'Order status inquiry' },
-    { id: 'TKT-2017', customer: 'Mike Brown', status: 'Processing', subject: 'Request for information' }
-  ];
-
-  // Recent contacts
-  recentContacts = [
-    { name: 'John Doe', avatar: 'https://adminlte.io/themes/v3/dist/img/user1-128x128.jpg', joinedDate: 'Today' },
-    { name: 'Jane Smith', avatar: 'https://adminlte.io/themes/v3/dist/img/user8-128x128.jpg', joinedDate: 'Yesterday' },
-    { name: 'Mike Brown', avatar: 'https://adminlte.io/themes/v3/dist/img/user2-160x160.jpg', joinedDate: '2 days' },
-    { name: 'Alice Johnson', avatar: 'https://adminlte.io/themes/v3/dist/img/user4-128x128.jpg', joinedDate: '2 days' }
-  ];
-
-  constructor() { }
+  recentTickets: RecentTicket[] = [];
 
   ngOnInit(): void {
-    // In a real application, you would load these metrics from your API
+    this.loadDashboardData();
   }
 
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'Open':
-        return 'bg-danger';
-      case 'Closed':
-        return 'bg-success';
-      case 'Pending':
-        return 'bg-warning';
-      case 'Processing':
-        return 'bg-info';
-      default:
-        return 'bg-secondary';
-    }
+  loadDashboardData(): void {
+    // Mock data - replace with actual API calls
+    this.stats = {
+      totalTickets: 150,
+      openTickets: 23,
+      closedTickets: 127,
+      whatsappMessages: 45
+    };
+
+    this.loadRecentTickets();
+  }
+
+  loadRecentTickets(): void {
+    // Mock data - replace with actual API call
+    this.recentTickets = [
+      {
+        id: 1,
+        subject: 'Login Issue',
+        customer: 'John Doe',
+        status: 'Open',
+        priority: 'High',
+        created: '2025-06-13 10:30'
+      },
+      {
+        id: 2,
+        subject: 'Payment Problem',
+        customer: 'Jane Smith',
+        status: 'In Progress',
+        priority: 'Medium',
+        created: '2025-06-13 09:15'
+      },
+      {
+        id: 3,
+        subject: 'Feature Request',
+        customer: 'Bob Johnson',
+        status: 'Open',
+        priority: 'Low',
+        created: '2025-06-13 08:45'
+      },
+      {
+        id: 4,
+        subject: 'Bug Report',
+        customer: 'Alice Brown',
+        status: 'Closed',
+        priority: 'High',
+        created: '2025-06-12 16:20'
+      }
+    ];
   }
 }

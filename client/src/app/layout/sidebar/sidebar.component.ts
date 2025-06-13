@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService, User } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,10 +14,14 @@ import { filter } from 'rxjs/operators';
 })
 export class SidebarComponent implements OnInit {
   currentPath: string = '';
-  ticketCount: number = 12; // Default value, replace with API call
-  openTicketCount: number = 5; // Default value, replace with API call
+  ticketCount: number = 12;
+  openTicketCount: number = 5;
+  currentUser: User | null = null;
 
-  constructor(private router: Router) {}
+  // Track which menus are open
+  openMenus: Set<string> = new Set();
+
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
     // Track current route for active menu highlighting
@@ -24,12 +29,42 @@ export class SidebarComponent implements OnInit {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.currentPath = event.url;
+      this.updateMenuState();
     });
 
     // Initialize with current path
     this.currentPath = this.router.url;
-
+    this.updateMenuState();
     this.loadTicketCounts();
+
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  updateMenuState(): void {
+    // Auto-open menus based on current route
+    if (this.currentPath.startsWith('/tickets')) {
+      this.openMenus.add('tickets');
+    }
+    if (this.currentPath.startsWith('/whatsapp')) {
+      this.openMenus.add('whatsapp');
+    }
+    if (this.currentPath.startsWith('/users')) {
+      this.openMenus.add('users');
+    }
+  }
+
+  toggleMenu(menu: string): void {
+    if (this.openMenus.has(menu)) {
+      this.openMenus.delete(menu);
+    } else {
+      this.openMenus.add(menu);
+    }
+  }
+
+  isMenuOpen(menu: string): boolean {
+    return this.openMenus.has(menu);
   }
 
   loadTicketCounts(): void {
@@ -42,19 +77,7 @@ export class SidebarComponent implements OnInit {
     return this.currentPath.startsWith(path);
   }
 
-  getUserName(): string {
-    // Replace with actual user data from auth service
-    return 'Admin User';
-  }
-
-  isAdmin(): boolean {
-    // Replace with actual role check from auth service
-    return true;
-  }
-
   logout(): void {
-    // Replace with actual logout logic
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

@@ -1,0 +1,259 @@
+/* Sidebar specific styling fixes */
+.sidebar {
+  height: calc(100vh - 3.5rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Fix for brand link */
+.brand-link {
+  padding: 0.8125rem 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-link:hover {
+  text-decoration: none;
+}
+
+.brand-image {
+  width: 2.1rem;
+  height: 2.1rem;
+  margin-right: 0.5rem;
+  margin-top: -0.125rem;
+}
+
+/* User panel styling */
+.user-panel {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-panel .info a {
+  color: #c2c7d0 !important;
+  text-decoration: none;
+}
+
+.user-panel .info a:hover {
+  color: #fff !important;
+}
+
+/* Search form styling */
+.form-inline {
+  padding: 0.375rem 0.75rem;
+}
+
+.form-control-sidebar {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.form-control-sidebar:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  box-shadow: none;
+}
+
+.form-control-sidebar::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-sidebar {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.btn-sidebar:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+/* Navigation styling fixes */
+.nav-sidebar .nav-item {
+  margin-bottom: 0;
+}
+
+.nav-sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  color: #c2c7d0;
+  border-radius: 0.25rem;
+  margin-bottom: 0.125rem;
+  white-space: nowrap;
+  position: relative;
+}
+
+.nav-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.nav-sidebar .nav-link.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.nav-sidebar .nav-link.active:hover {
+  background-color: #0056b3;
+}
+
+/* Icon alignment fixes */
+.nav-icon {
+  font-size: 1.1rem;
+  margin-right: 0.75rem;
+  text-align: center;
+  width: 1.6rem;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Text container styling */
+.nav-sidebar .nav-link p {
+  margin: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Right arrow and badge positioning */
+.nav-sidebar .nav-link p .right {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Badge styling */
+.badge.right {
+  margin-left: 0.5rem;
+  font-size: 0.65rem;
+  padding: 0.25em 0.5em;
+}
+
+/* Tree view styling */
+.nav-treeview {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.nav-treeview .nav-link {
+  padding: 0.375rem 0.5rem 0.375rem 2.5rem;
+  font-size: 0.825rem;
+  margin-bottom: 0.0625rem;
+}
+
+.nav-treeview .nav-icon {
+  font-size: 0.75rem;
+  margin-right: 0.5rem;
+  width: 1rem;
+}
+
+.nav-treeview .nav-link p {
+  font-size: 0.825rem;
+}
+
+/* Right arrow animation */
+.nav-link .fas.fa-angle-left.right {
+  transition: transform 0.3s ease;
+  font-size: 0.75rem;
+  width: auto;
+  margin-left: 0.5rem;
+}
+
+.nav-link .fas.fa-angle-left.right.rotate {
+  transform: rotate(-90deg);
+}
+
+/* Alternative approach for menu-open state */
+.nav-item.menu-open > .nav-link .fas.fa-angle-left.right {
+  transform: rotate(-90deg);
+}
+
+/* Ensure proper spacing for different menu levels */
+.nav-sidebar .nav-link:not(.nav-treeview .nav-link) {
+  min-height: 2.25rem;
+}
+
+.nav-treeview .nav-link {
+  min-height: 2rem;
+}
+
+/* Header styling */
+.nav-header {
+  padding: 0.5rem 1rem 0.125rem 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+
+/* Fix for menu transitions */
+.nav-treeview {
+  transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .main-sidebar {
+    margin-left: -250px;
+  }
+
+  .sidebar-open .main-sidebar {
+    margin-left: 0;
+  }
+}
+
+/* Dark theme specific overrides */
+.sidebar-dark-primary {
+  background-color: #343a40;
+}
+
+.sidebar-dark-primary .brand-link {
+  color: rgba(255, 255, 255, 0.8);
+  background-color: #3f474e;
+}
+
+.sidebar-dark-primary .brand-link:hover {
+  color: #fff;
+}
+
+/* Scrollbar for webkit browsers */
+.sidebar-dark-primary .sidebar::-webkit-scrollbar {
+  width: 6px;
+  background-color: transparent;
+}
+
+.sidebar-dark-primary .sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}

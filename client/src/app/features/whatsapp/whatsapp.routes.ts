@@ -10,12 +10,14 @@ export const WHATSAPP_ROUTES: Routes = [
   },
   {
     path: 'status',
-    component: WhatsappStatusComponent,
-    data: { title: 'WhatsApp Connection Status' }
+    component: WhatsappStatusComponent
   },
   {
     path: 'templates',
-    component: MessageTemplatesComponent,
-    data: { title: 'Message Templates' }
+    component: MessageTemplatesComponent
+  },
+  {
+    path: 'contacts',
+    loadComponent: () => import('./components/whatsapp-contacts.component').then(c => c.WhatsappContactsComponent)
   }
 ];

@@ -1,75 +1,79 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule],
   template: `
-    <div class="login-page bg-body-secondary">
+    <div class="login-page">
       <div class="login-box">
-        <div class="card card-outline card-primary">
-          <div class="card-header text-center">
-            <a href="#" class="h1">
-              <i class="fab fa-whatsapp text-success me-2"></i>
-              <b>WhatsApp</b>Ticket
-            </a>
-          </div>
-          <div class="card-body">
+        <div class="login-logo">
+          <a href="#"><b>WhatsApp</b> Ticket System</a>
+        </div>
+        <div class="card">
+          <div class="card-body login-card-body">
             <p class="login-box-msg">Sign in to start your session</p>
 
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
               <div class="input-group mb-3">
-                <input type="email" class="form-control" placeholder="Email" formControlName="email">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Username"
+                  [(ngModel)]="credentials.username"
+                  name="username"
+                  required
+                  #username="ngModel"
+                >
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="fas fa-envelope"></span>
+                    <span class="fas fa-user"></span>
                   </div>
                 </div>
               </div>
-              <div *ngIf="loginForm.controls['email'].invalid && loginForm.controls['email'].touched" class="text-danger mb-3">
-                Valid email is required
-              </div>
-
               <div class="input-group mb-3">
-                <input type="password" class="form-control" placeholder="Password" formControlName="password">
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Password"
+                  [(ngModel)]="credentials.password"
+                  name="password"
+                  required
+                  #password="ngModel"
+                >
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="fas fa-lock"></span>
                   </div>
                 </div>
               </div>
-              <div *ngIf="loginForm.controls['password'].invalid && loginForm.controls['password'].touched" class="text-danger mb-3">
-                Password is required
+
+              <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                {{ errorMessage }}
               </div>
 
               <div class="row">
-                <div class="col-8">
-                  <div class="icheck-primary">
-                    <input type="checkbox" id="remember" formControlName="rememberMe">
-                    <label for="remember">
-                      Remember Me
-                    </label>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <button type="submit" class="btn btn-primary btn-block" [disabled]="loginForm.invalid || isLoggingIn">
-                    <span *ngIf="isLoggingIn" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                <div class="col-12">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-block"
+                    [disabled]="isLoading || !loginForm.valid"
+                  >
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
                     Sign In
                   </button>
                 </div>
               </div>
             </form>
 
-            <div *ngIf="loginError" class="alert alert-danger mt-3">
-              {{ loginError }}
-            </div>
-
             <p class="mb-1 mt-3">
-              <a href="#">I forgot my password</a>
+              <small class="text-muted">
+                Demo credentials: admin/password or user/password
+              </small>
             </p>
           </div>
         </div>
@@ -78,11 +82,10 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
   styles: [`
     .login-page {
-      align-items: center;
-      background-color: #e9ecef;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      height: 100vh;
+      align-items: center;
       justify-content: center;
     }
 
@@ -90,59 +93,74 @@ import { AuthService } from '../../../core/services/auth.service';
       width: 360px;
     }
 
-    .login-box-msg {
-      margin: 0;
-      padding: 0 20px 20px;
+    .login-logo {
       text-align: center;
+      margin-bottom: 20px;
     }
 
-    .icheck-primary {
-      margin-top: 6px;
+    .login-logo a {
+      color: white;
+      font-size: 2rem;
+      font-weight: 300;
+      text-decoration: none;
+    }
+
+    .card {
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border: none;
+      border-radius: 10px;
+    }
+
+    .login-card-body {
+      padding: 20px;
+    }
+
+    .login-box-msg {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #666;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
     }
   `]
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-  loginError: string | null = null;
-  isLoggingIn: boolean = false;
+  credentials = {
+    username: '',
+    password: ''
+  };
+
+  errorMessage = '';
+  isLoading = false;
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private authService: AuthService
-  ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      rememberMe: [false]
-    });
-
-    // If already logged in, redirect to dashboard
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/dashboard']);
-    }
-  }
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.isLoggingIn = true;
-      this.loginError = null;
+    if (this.credentials.username && this.credentials.password) {
+      this.isLoading = true;
+      this.errorMessage = '';
 
-      const { email, password } = this.loginForm.value;
-
-      this.authService.login(email, password).subscribe({
+      this.authService.login(this.credentials.username, this.credentials.password).subscribe({
         next: () => {
+          this.isLoading = false;
           this.router.navigate(['/dashboard']);
         },
         error: (error) => {
-          this.loginError = error.message || 'Login failed. Please try again.';
-          this.isLoggingIn = false;
+          this.isLoading = false;
+          this.errorMessage = error.message || 'Login failed. Please try again.';
         }
-      });
-    } else {
-      // Mark all fields as touched to trigger validation messages
-      Object.keys(this.loginForm.controls).forEach(key => {
-        this.loginForm.get(key)?.markAsTouched();
       });
     }
   }

@@ -193,7 +193,7 @@ interface TemplateComponent {
                     {{ component.text }}
                   </div>
                   <div *ngIf="component.type === 'BUTTONS'" class="mt-2">
-                    <button *ngFor="let button of component.buttons" class="btn btn-sm btn-outline-success mr-2">
+                    <button *ngFor="let button of getComponentButtons(component)" class="btn btn-sm btn-outline-success mr-2">
                       {{ button.text }}
                     </button>
                   </div>
@@ -439,5 +439,10 @@ export class MessageTemplatesComponent implements OnInit {
   sendTemplate(template: Template): void {
     // In a real app, you would open a modal to select recipients and send the template
     console.log('Sending template:', template);
+  }
+
+  getComponentButtons(component: TemplateComponent): any[] {
+    // This method is used to access the buttons property of a component
+    return (component as any).buttons || [];
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService, User } from '../../core/services/auth.service';
 
 interface Message {
   sender: string;
@@ -30,8 +31,13 @@ export class HeaderComponent implements OnInit {
   notifications: Notification[] = [];
   whatsappConnected: boolean = true;
   darkMode: boolean = false;
+  currentUser: User | null = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -123,8 +129,16 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
+    this.authService.logout();
     // Replace with actual logout logic
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
+  }
+
+  toggleSidebar(): void {
+    const body = document.querySelector('body');
+    if (body) {
+      body.classList.toggle('sidebar-collapse');
+    }
   }
 }

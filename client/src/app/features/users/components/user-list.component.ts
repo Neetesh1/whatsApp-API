@@ -1,18 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">User Management</h3>
         <div class="card-tools">
-          <button type="button" class="btn btn-primary btn-sm" [routerLink]="['/users/create']">
+          <a routerLink="/users/create" class="btn btn-primary btn-sm">
             <i class="fas fa-user-plus"></i> Add New User
-          </button>
+          </a>
         </div>
       </div>
       <div class="card-body table-responsive p-0">

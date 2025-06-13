@@ -4,22 +4,16 @@ import { TicketListComponent } from './components/ticket-list.component';
 export const TICKETS_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'all',
-    pathMatch: 'full'
-  },
-  {
-    path: 'all',
-    component: TicketListComponent,
-    data: { title: 'All Tickets', ticketType: 'all' }
+    component: TicketListComponent
   },
   {
     path: 'open',
     component: TicketListComponent,
-    data: { title: 'Open Tickets', ticketType: 'open' }
+    data: { status: 'open' }
   },
   {
     path: 'closed',
     component: TicketListComponent,
-    data: { title: 'Closed Tickets', ticketType: 'closed' }
+    data: { status: 'closed' }
   }
 ];

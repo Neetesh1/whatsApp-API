@@ -5,17 +5,15 @@ import { UserCreateComponent } from './components/user-create.component';
 export const USERS_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'manage',
-    pathMatch: 'full'
-  },
-  {
-    path: 'manage',
-    component: UserListComponent,
-    data: { title: 'Manage Users' }
+    component: UserListComponent
   },
   {
     path: 'create',
+    component: UserCreateComponent
+  },
+  {
+    path: 'edit/:id',
     component: UserCreateComponent,
-    data: { title: 'Create User' }
+    data: { mode: 'edit' }
   }
 ];

@@ -1,1 +1,118 @@
 /* You can add global styles to this file, and also import other style files */
+
+// Import Font Awesome CSS (without tilde)
+@import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
+
+// Import AdminLTE CSS (without tilde)
+@import "../node_modules/admin-lte/dist/css/adminlte.min.css";
+
+// Layout fixes for proper sidebar and content positioning
+body {
+  overflow-x: hidden;
+}
+
+.main-sidebar {
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1020;
+  width: 250px;
+}
+
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+}
+
+// Content wrapper with proper margins
+.content-wrapper {
+  margin-left: 250px;
+  margin-top: 3.5rem; // Header height
+  min-height: calc(100vh - 3.5rem);
+  background-color: #f4f6f9;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+// Footer positioning
+.main-footer {
+  margin-left: 250px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+// Sidebar collapse functionality
+body.sidebar-collapse .content-wrapper,
+body.sidebar-collapse .main-footer {
+  margin-left: 4.6rem;
+}
+
+// Responsive behavior
+@media (max-width: 991.98px) {
+  .content-wrapper,
+  .main-footer {
+    margin-left: 0;
+  }
+
+  .main-sidebar {
+    margin-left: -250px;
+    transition: margin-left 0.3s ease-in-out;
+  }
+
+  body.sidebar-open .main-sidebar {
+    margin-left: 0;
+  }
+}
+
+// Dark mode support
+.dark-mode .content-wrapper {
+  background-color: #343a40;
+  color: #fff;
+}
+
+// Add some basic styling fixes for AdminLTE 4
+.dropdown-menu {
+  margin: 0;
+}
+
+.nav-sidebar .nav-link > .right,
+.nav-sidebar .nav-link > p > .right {
+  position: absolute;
+  right: 1rem;
+  top: .7rem;
+}
+
+.dropdown-item-title {
+  font-weight: 400;
+  margin: 0;
+}
+
+.img-size-50 {
+  width: 50px;
+}
+
+.img-circle {
+  border-radius: 50%;
+}
+
+.media {
+  display: flex;
+  align-items: flex-start;
+}
+
+.media-body {
+  flex: 1;
+  padding-left: 10px;
+}
+
+// Fix for navbar badges
+.navbar-badge {
+  font-size: .6rem;
+  font-weight: 300;
+  padding: 2px 4px;
+  position: absolute;
+  right: 5px;
+  top: 0;
+}
