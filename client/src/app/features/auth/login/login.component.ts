@@ -159,7 +159,15 @@ export class LoginComponent {
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = error.message || 'Login failed. Please try again.';
+          if (error.status === 401) {
+            this.errorMessage = 'Invalid username or password';
+          } else if (error.status === 500) {
+            this.errorMessage = 'Server error. Please try again later';
+          } else if (error.error?.error) {
+            this.errorMessage = error.error.error;
+          } else {
+            this.errorMessage = 'Login failed. Please try again.';
+          }
         }
       });
     }

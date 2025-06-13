@@ -1,19 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, tap, catchError } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 export interface User {
   id: number;
   username: string;
-  email: string;
   role: string;
 }
 
 export interface LoginResponse {
   token: string;
-  user: User;
+  user?: User;
+}
+
+export interface RegisterRequest {
+  username: string;
+  password: string;
+  role?: string;
 }
 
 @Injectable({
@@ -22,69 +28,91 @@ export interface LoginResponse {
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  private apiUrl = 'http://localhost:3000/api'; // Base API URL
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router) {
     // Check if user is already logged in
+    this.initializeAuth();
+  }
+
+  private initializeAuth(): void {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
     if (token && user) {
-      this.currentUserSubject.next(JSON.parse(user));
+      try {
+        const parsedUser = JSON.parse(user);
+        this.currentUserSubject.next(parsedUser);
+      } catch (error) {
+        // Invalid user data, clear storage
+        this.logout();
+      }
     }
   }
 
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { username, password }).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, {
+      username,
+      password
+    }).pipe(
       tap(response => {
         localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        this.currentUserSubject.next(response.user);
+
+        // If user data is returned, use it; otherwise decode from token
+        let user: User;
+        if (response.user) {
+          user = response.user;
+        } else {
+          // Decode user info from token payload
+          try {
+            const payload = JSON.parse(atob(response.token.split('.')[1]));
+            user = {
+              id: payload.id,
+              username: payload.username,
+              role: payload.role
+            };
+          } catch (error) {
+            throw new Error('Invalid token format');
+          }
+        }
+
+        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUserSubject.next(user);
       }),
       catchError(error => {
-        // Fallback to mock data for demo purposes
-        if (username === 'admin' && password === 'password') {
-          const user = {
-            id: 1,
-            username: 'admin',
-            email: 'admin@example.com',
-            role: 'admin'
-          };
+        console.error('Login error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 
-          localStorage.setItem('token', 'demo-token-admin');
-          localStorage.setItem('user', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-          return of({ token: 'demo-token-admin', user });
-        } else if (username === 'user' && password === 'password') {
-          const user = {
-            id: 2,
-            username: 'user',
-            email: 'user@example.com',
-            role: 'user'
-          };
-
-          localStorage.setItem('token', 'demo-token-user');
-          localStorage.setItem('user', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-          return of({ token: 'demo-token-user', user });
-        } else {
-          return throwError(() => new Error('Invalid username or password'));
-        }
+  register(userData: RegisterRequest): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, userData).pipe(
+      catchError(error => {
+        console.error('Registration error:', error);
+        return throwError(() => error);
       })
     );
   }
 
   logout(): void {
-    // Remove token and user info
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.currentUserSubject.next(null);
-
-    // Navigate to login
     this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      // Check if token is expired
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      return payload.exp > currentTime;
+    } catch (error) {
+      return false;
+    }
   }
 
   getCurrentUser(): User | null {
@@ -93,5 +121,14 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('token');
+  }
+
+  hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === role;
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('admin');
   }
 }
