@@ -50,7 +50,7 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, {
       username,
       password
     }).pipe(
