@@ -1,14 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Import Font Awesome CSS (without tilde)
+// Import Font Awesome CSS
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
 
-// Import AdminLTE CSS (without tilde)
+// Import AdminLTE CSS
 @import "../node_modules/admin-lte/dist/css/adminlte.min.css";
 
-// Layout fixes for proper sidebar and content positioning
-body {
+// Import Bootstrap 5 CSS
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+
+// CRITICAL FIX: Prevent content scrolling behind fixed header
+html, body {
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 // Desktop-first approach - sidebar visible by default
@@ -19,8 +23,8 @@ body {
   left: 0;
   z-index: 1020;
   width: 250px;
-  transform: translateX(0); // Ensure sidebar is visible on desktop
-  transition: transform 0.3s ease-in-out;
+  transform: translateX(0);
+  transition: all 0.3s ease-in-out;
 }
 
 .main-header {
@@ -29,41 +33,143 @@ body {
   left: 0;
   right: 0;
   z-index: 1030;
+  height: 3.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+  transition: all 0.3s ease-in-out;
 }
 
-// Content wrapper with proper margins for desktop
+// SCROLLING FIX: Content wrapper with proper spacing
 .content-wrapper {
   margin-left: 250px;
-  margin-top: 3.5rem; // Header height
+  margin-top: 3.5rem;
   min-height: calc(100vh - 3.5rem);
   background-color: #f4f6f9;
-  transition: margin-left 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  z-index: 1000;
 }
 
 // Footer positioning for desktop
 .main-footer {
   margin-left: 250px;
-  transition: margin-left 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  z-index: 1000;
 }
 
-// Mobile-specific styles (tablet and below)
+// SIDEBAR COLLAPSE FUNCTIONALITY (Desktop: Mini sidebar with icons only)
+body.sidebar-collapse .main-sidebar {
+  width: 4.6rem !important;
+  transform: translateX(0) !important;
+}
+
+body.sidebar-collapse .content-wrapper {
+  margin-left: 4.6rem !important;
+  margin-top: 3.5rem !important;
+}
+
+body.sidebar-collapse .main-footer {
+  margin-left: 4.6rem !important;
+}
+
+body.sidebar-collapse .main-header {
+  left: 4.6rem !important;
+  width: calc(100% - 4.6rem) !important;
+}
+
+// Hide sidebar text and show only icons when collapsed
+body.sidebar-collapse .main-sidebar .nav-sidebar .nav-link p {
+  display: none;
+}
+
+body.sidebar-collapse .main-sidebar .brand-text {
+  display: none;
+}
+
+body.sidebar-collapse .main-sidebar .nav-sidebar .nav-link {
+  padding: 0.5rem;
+  text-align: center;
+  justify-content: center;
+}
+
+body.sidebar-collapse .main-sidebar .nav-sidebar .nav-icon {
+  margin-right: 0;
+  font-size: 1.2rem;
+  width: 100%;
+}
+
+// Hide treeview menus when sidebar is collapsed
+body.sidebar-collapse .main-sidebar .nav-treeview {
+  display: none !important;
+}
+
+// SIDEBAR HIDDEN FUNCTIONALITY (Desktop: Completely hide sidebar)
+body.sidebar-hidden .main-sidebar {
+  transform: translateX(-250px) !important;
+}
+
+body.sidebar-hidden .content-wrapper {
+  margin-left: 0 !important;
+  margin-top: 3.5rem !important;
+}
+
+body.sidebar-hidden .main-footer {
+  margin-left: 0 !important;
+}
+
+body.sidebar-hidden .main-header {
+  left: 0 !important;
+  width: 100% !important;
+}
+
+// MOBILE NAVIGATION (AdminLTE 4 Style)
 @media (max-width: 991.98px) {
+  // On mobile, sidebar is hidden by default
   .main-sidebar {
-    transform: translateX(-250px); // Hide sidebar off-screen on mobile
+    transform: translateX(-250px);
+    box-shadow: none;
   }
 
   .content-wrapper,
   .main-footer {
-    margin-left: 0; // Full width content on mobile
+    margin-left: 0;
+    margin-top: 3.5rem;
   }
 
-  // Show sidebar when menu is opened on mobile
+  .main-header {
+    left: 0;
+    width: 100%;
+  }
+
+  // Mobile sidebar states
+  body.sidebar-collapse .main-sidebar,
+  body.sidebar-hidden .main-sidebar {
+    transform: translateX(-250px) !important;
+    width: 250px !important;
+  }
+
+  body.sidebar-collapse .content-wrapper,
+  body.sidebar-collapse .main-footer,
+  body.sidebar-hidden .content-wrapper,
+  body.sidebar-hidden .main-footer {
+    margin-left: 0 !important;
+  }
+
+  body.sidebar-collapse .main-header,
+  body.sidebar-hidden .main-header {
+    left: 0 !important;
+    width: 100% !important;
+  }
+
+  // Show sidebar when menu is opened on mobile (AdminLTE 4 behavior)
   body.sidebar-open .main-sidebar {
-    transform: translateX(0);
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    transform: translateX(0) !important;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    z-index: 1025; // Above content
   }
 
-  // Add overlay when sidebar is open on mobile
+  // Dark overlay when sidebar is open on mobile
   body.sidebar-open::before {
     content: '';
     position: fixed;
@@ -72,25 +178,82 @@ body {
     right: 0;
     bottom: 0;
     background-color: rgba(0,0,0,0.5);
-    z-index: 1019;
+    z-index: 1021; // Between sidebar and content
+    animation: fadeIn 0.3s ease;
+  }
+
+  // Prevent body scroll when sidebar is open on mobile
+  body.sidebar-open {
+    overflow: hidden;
+  }
+
+  // Ensure all sidebar features work on mobile when open
+  body.sidebar-open .main-sidebar .nav-sidebar .nav-link p {
+    display: flex !important;
+  }
+
+  body.sidebar-open .main-sidebar .brand-text {
+    display: inline !important;
+  }
+
+  body.sidebar-open .main-sidebar .nav-treeview {
+    display: block !important;
   }
 }
 
-// Ensure desktop behavior is not affected by mobile classes
+// Desktop behavior (992px and up)
 @media (min-width: 992px) {
   .main-sidebar {
-    transform: translateX(0) !important; // Force sidebar visible on desktop
+    transform: translateX(0) !important;
   }
 
   .content-wrapper,
   .main-footer {
-    margin-left: 250px !important; // Force proper margins on desktop
+    margin-left: 250px !important;
+    margin-top: 3.5rem !important;
   }
 
-  // Remove any mobile-specific behaviors on desktop
+  .main-header {
+    left: 250px;
+    width: calc(100% - 250px);
+  }
+
+  // Remove mobile-specific behaviors on desktop
   body.sidebar-open::before {
     display: none;
   }
+
+  body.sidebar-open {
+    overflow: auto;
+  }
+
+  // Ensure desktop states work properly
+  body:not(.sidebar-collapse):not(.sidebar-hidden) .main-sidebar {
+    width: 250px;
+    transform: translateX(0);
+  }
+}
+
+// ANIMATIONS
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-250px); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0); }
+  to { transform: translateX(-250px); }
+}
+
+// Apply animations to sidebar
+.main-sidebar {
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
 }
 
 // Dark mode support
@@ -99,16 +262,97 @@ body {
   color: #fff;
 }
 
-// Add some basic styling fixes for AdminLTE 4
-.dropdown-menu {
-  margin: 0;
+// CRITICAL Z-INDEX HIERARCHY - Prevents content overlap
+.main-header,
+.main-header .navbar {
+  z-index: 1030 !important;
 }
 
+.main-sidebar {
+  z-index: 1020 !important;
+}
+
+.content-wrapper,
+.content-header,
+.content {
+  z-index: 1000 !important;
+  position: relative;
+}
+
+// Prevent any elements from appearing above header
+.modal {
+  z-index: 1050; /* Above header for modals */
+}
+
+.dropdown-menu {
+  z-index: 1040; /* Above header for dropdowns */
+}
+
+.tooltip {
+  z-index: 1070; /* Above modals */
+}
+
+.popover {
+  z-index: 1060; /* Above modals */
+}
+
+// Bootstrap 5 compatibility fixes
+.dropdown-menu {
+  margin: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  color: #212529;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  clear: both;
+  font-weight: 400;
+  border: 0;
+  background-color: transparent;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: #f8f9fa;
+  color: #16181b;
+}
+
+.dropdown-header {
+  display: block;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+  white-space: nowrap;
+}
+
+.dropdown-divider {
+  height: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border-top: 1px solid #dee2e6;
+}
+
+// Fix for navbar badges
+.navbar-badge {
+  font-size: 0.6rem;
+  font-weight: 300;
+  padding: 2px 4px;
+  position: absolute;
+  right: 5px;
+  top: 0;
+}
+
+// AdminLTE specific fixes
 .nav-sidebar .nav-link > .right,
 .nav-sidebar .nav-link > p > .right {
   position: absolute;
   right: 1rem;
-  top: .7rem;
+  top: 0.7rem;
 }
 
 .dropdown-item-title {
@@ -118,6 +362,7 @@ body {
 
 .img-size-50 {
   width: 50px;
+  height: 50px;
 }
 
 .img-circle {
@@ -132,16 +377,6 @@ body {
 .media-body {
   flex: 1;
   padding-left: 10px;
-}
-
-// Fix for navbar badges
-.navbar-badge {
-  font-size: .6rem;
-  font-weight: 300;
-  padding: 2px 4px;
-  position: absolute;
-  right: 5px;
-  top: 0;
 }
 
 // Sidebar hidden functionality (completely hide sidebar)
@@ -164,4 +399,104 @@ body.sidebar-hidden .main-header {
 .main-footer,
 .main-header {
   transition: all 0.3s ease-in-out;
+}
+
+// Fix breadcrumb styling for Bootstrap 5
+.breadcrumb {
+  background-color: transparent;
+  margin-bottom: 0;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: var(--bs-breadcrumb-divider, "/");
+  padding: 0 0.5rem;
+  color: #6c757d;
+}
+
+.breadcrumb-item a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+}
+
+// Fix for dropdown menu positioning
+.dropdown-menu-lg {
+  min-width: 280px;
+}
+
+.dropdown-menu-end {
+  right: 0;
+  left: auto;
+}
+
+// Bootstrap 5 utility classes compatibility
+.ms-auto {
+  margin-left: auto !important;
+}
+
+.me-2 {
+  margin-right: 0.5rem !important;
+}
+
+.me-3 {
+  margin-right: 1rem !important;
+}
+
+.ms-2 {
+  margin-left: 0.5rem !important;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.text-sm {
+  font-size: 0.875rem !important;
+}
+
+.text-xs {
+  font-size: 0.75rem !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.float-end {
+  float: right !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.flex-grow-1 {
+  flex-grow: 1 !important;
+}
+
+.rounded-circle {
+  border-radius: 50% !important;
 }

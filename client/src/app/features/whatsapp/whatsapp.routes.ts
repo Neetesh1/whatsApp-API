@@ -1,7 +1,4 @@
 import { Routes } from '@angular/router';
-import { WhatsappStatusComponent } from './components/whatsapp-status.component';
-import { MessageTemplatesComponent } from './components/message-templates.component';
-
 export const WHATSAPP_ROUTES: Routes = [
   {
     path: '',
@@ -10,11 +7,11 @@ export const WHATSAPP_ROUTES: Routes = [
   },
   {
     path: 'status',
-    component: WhatsappStatusComponent
+    loadComponent: () => import('./components/whatsapp-status.component').then(c => c.WhatsappStatusComponent)
   },
   {
     path: 'templates',
-    component: MessageTemplatesComponent
+    loadComponent: () => import('./components/message-templates.component').then(c => c.MessageTemplatesComponent)
   },
   {
     path: 'contacts',

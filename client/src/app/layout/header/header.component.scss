@@ -2,10 +2,12 @@
 .main-header {
   position: fixed;
   top: 0;
-  left: 250px; /* Account for sidebar width */
+  left: 0;
   right: 0;
   z-index: 1030;
   height: 3.5rem;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   transition: left 0.3s ease-in-out;
 }
 
@@ -91,12 +93,28 @@
 @media (max-width: 991.98px) {
   .main-header {
     left: 0; /* Full width on mobile */
+    width: 100%;
+  }
+}
+
+/* Desktop header adjustments */
+@media (min-width: 992px) {
+  .main-header {
+    left: 250px; /* Account for sidebar width on desktop */
+    width: calc(100% - 250px);
   }
 }
 
 /* Sidebar collapse adjustments */
 body.sidebar-collapse .main-header {
   left: 4.6rem; /* Adjust for collapsed sidebar */
+  width: calc(100% - 4.6rem);
+}
+
+/* Sidebar hidden adjustments */
+body.sidebar-hidden .main-header {
+  left: 0;
+  width: 100%;
 }
 
 /* Ensure proper z-index stacking */

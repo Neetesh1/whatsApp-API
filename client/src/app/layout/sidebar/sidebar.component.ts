@@ -4,13 +4,30 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService, User } from '../../core/services/auth.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  styleUrls: ['./sidebar.component.scss'],
+  animations: [
+    trigger('slideInOut', [
+      state('in', style({
+        height: '*',
+        opacity: 1,
+        overflow: 'hidden'
+      })),
+      state('out', style({
+        height: '0px',
+        opacity: 0,
+        overflow: 'hidden'
+      })),
+      transition('in => out', animate('300ms ease-in-out')),
+      transition('out => in', animate('300ms ease-in-out'))
+    ])
+  ]
 })
 export class SidebarComponent implements OnInit {
   currentPath: string = '';
@@ -44,6 +61,8 @@ export class SidebarComponent implements OnInit {
 
   updateMenuState(): void {
     // Auto-open menus based on current route
+    this.openMenus.clear(); // Clear existing state
+
     if (this.currentPath.startsWith('/tickets')) {
       this.openMenus.add('tickets');
     }

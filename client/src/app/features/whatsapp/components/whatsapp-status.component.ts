@@ -120,7 +120,7 @@ interface ConnectionMetric {
 })
 export class WhatsappStatusComponent implements OnInit {
   connectionActive: boolean = true;
-  connectionTime: string = 'June 12, 2023 09:45 AM';
+  connectionTime: string = 'June 12, 2025 09:45 AM';
   disconnectionReason: string = 'API Key expired or invalid';
 
   connectionMetrics: ConnectionMetric[] = [
@@ -153,34 +153,22 @@ export class WhatsappStatusComponent implements OnInit {
 
   connectionLogs = [
     {
-      time: '2023-06-12 09:45:23',
+      time: '2025-06-13 09:45:23',
       event: 'Connection Established',
       status: 'Success',
       details: 'WhatsApp API connection established successfully'
     },
     {
-      time: '2023-06-12 09:44:58',
+      time: '2025-06-13 09:44:58',
       event: 'Authentication',
       status: 'Success',
       details: 'Authenticated with WhatsApp Business API'
     },
     {
-      time: '2023-06-12 09:44:45',
+      time: '2025-06-13 09:44:45',
       event: 'Connection Attempt',
       status: 'Success',
       details: 'Attempting to connect to WhatsApp Business API'
-    },
-    {
-      time: '2023-06-11 18:30:12',
-      event: 'Disconnection',
-      status: 'Error',
-      details: 'Connection closed due to inactivity'
-    },
-    {
-      time: '2023-06-11 09:15:45',
-      event: 'Connection Established',
-      status: 'Success',
-      details: 'WhatsApp API connection established successfully'
     }
   ];
 
@@ -194,7 +182,7 @@ export class WhatsappStatusComponent implements OnInit {
     // In a real application, you would call a service to refresh the connection status
     console.log('Refreshing WhatsApp connection status...');
     // For demonstration, just show a temporary "refresh" message
-    this.connectionMetrics[0].value = Math.floor(Math.random() * 100) + 300; // Random update to the metrics
+    this.connectionMetrics[0].value = Math.floor(Math.random() * 100) + 300;
     this.connectionMetrics[1].value = Math.floor(Math.random() * 100) + 400;
     this.connectionMetrics[2].value = Math.floor(Math.random() * 20);
   }

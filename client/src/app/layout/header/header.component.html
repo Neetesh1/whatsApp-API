@@ -16,10 +16,10 @@
   </ul>
 
   <!-- Right navbar links -->
-  <ul class="navbar-nav ml-auto">
+  <ul class="navbar-nav ms-auto">
     <!-- WhatsApp Status -->
     <li class="nav-item">
-      <a class="nav-link" href="#" (click)="toggleWhatsAppStatus()">
+      <a class="nav-link" href="#" (click)="toggleWhatsAppStatus(); $event.preventDefault()">
         <i class="fab fa-whatsapp" [class.text-success]="whatsappConnected" [class.text-danger]="!whatsappConnected"></i>
         <span class="badge" [class.badge-success]="whatsappConnected" [class.badge-danger]="!whatsappConnected"
               style="font-size: 0.6rem;">{{ whatsappConnected ? 'ON' : 'OFF' }}</span>
@@ -28,45 +28,48 @@
 
     <!-- Messages Dropdown Menu -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#" (click)="$event.preventDefault()">
+      <a class="nav-link" href="#" id="messagesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="far fa-comments"></i>
-        <span class="badge badge-danger navbar-badge" *ngIf="unreadMessages > 0">{{unreadMessages}}</span>
+        <span class="badge bg-danger navbar-badge" *ngIf="unreadMessages > 0">{{unreadMessages}}</span>
       </a>
-      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-        <a href="#" class="dropdown-item">
-          <div class="media">
-            <img src="https://adminlte.io/themes/v3/dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-            <div class="media-body">
-              <h3 class="dropdown-item-title">
-                Brad Diesel
-                <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-              </h3>
-              <p class="text-sm">Call me whenever you can...</p>
-              <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+      <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end" aria-labelledby="messagesDropdown">
+        <li><span class="dropdown-header">{{unreadMessages}} Messages</span></li>
+        <li><hr class="dropdown-divider"></li>
+        <li *ngFor="let message of recentMessages">
+          <a href="#" class="dropdown-item" (click)="$event.preventDefault()">
+            <div class="d-flex">
+              <img [src]="message.avatarUrl" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+              <div class="flex-grow-1">
+                <h6 class="dropdown-item-title mb-1">{{message.sender}}</h6>
+                <p class="text-sm mb-1">{{message.content}}</p>
+                <p class="text-xs text-muted mb-0"><i class="far fa-clock me-1"></i>{{message.time}}</p>
+              </div>
             </div>
-          </div>
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-      </div>
+          </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-center" href="#" (click)="navigateToMessages(); $event.preventDefault()">See All Messages</a></li>
+      </ul>
     </li>
 
     <!-- Notifications Dropdown Menu -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#" (click)="$event.preventDefault()">
+      <a class="nav-link" href="#" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="far fa-bell"></i>
-        <span class="badge badge-warning navbar-badge" *ngIf="notificationCount > 0">{{notificationCount}}</span>
+        <span class="badge bg-warning navbar-badge" *ngIf="notificationCount > 0">{{notificationCount}}</span>
       </a>
-      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-        <span class="dropdown-item dropdown-header">{{notificationCount}} Notifications</span>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item" *ngFor="let notification of notifications">
-          <i [class]="notification.iconClass"></i> {{notification.text}}
-          <span class="float-right text-muted text-sm">{{notification.time}}</span>
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-      </div>
+      <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end" aria-labelledby="notificationsDropdown">
+        <li><span class="dropdown-header">{{notificationCount}} Notifications</span></li>
+        <li><hr class="dropdown-divider"></li>
+        <li *ngFor="let notification of notifications">
+          <a href="#" class="dropdown-item" (click)="$event.preventDefault()">
+            <i [class]="notification.iconClass"></i> {{notification.text}}
+            <span class="float-end text-muted text-sm">{{notification.time}}</span>
+          </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-center" href="#" (click)="navigateToNotifications(); $event.preventDefault()">See All Notifications</a></li>
+      </ul>
     </li>
 
     <!-- Dark Mode Toggle -->
@@ -79,24 +82,23 @@
 
     <!-- User Menu -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#" (click)="$event.preventDefault()">
+      <a class="nav-link" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="far fa-user"></i>
-        <span class="d-none d-md-inline">{{ currentUser?.username || 'User' }}</span>
+        <span class="d-none d-md-inline ms-2">{{ currentUser?.username || 'User' }}</span>
       </a>
-      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-        <div class="dropdown-divider"></div>
-        <a routerLink="/profile" class="dropdown-item">
-          <i class="fas fa-user mr-2"></i> Profile
-        </a>
-        <div class="dropdown-divider"></div>
-        <a routerLink="/settings" class="dropdown-item">
-          <i class="fas fa-cog mr-2"></i> Settings
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item" (click)="logout(); $event.preventDefault()">
-          <i class="fas fa-sign-out-alt mr-2"></i> Logout
-        </a>
-      </div>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li><a routerLink="/profile" class="dropdown-item">
+          <i class="fas fa-user me-2"></i> Profile
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a routerLink="/settings" class="dropdown-item">
+          <i class="fas fa-cog me-2"></i> Settings
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a href="#" class="dropdown-item" (click)="logout(); $event.preventDefault()">
+          <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a></li>
+      </ul>
     </li>
   </ul>
 </nav>

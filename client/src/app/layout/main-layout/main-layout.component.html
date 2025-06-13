@@ -15,10 +15,16 @@
             <h1 class="m-0">{{ pageTitle }}</h1>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a routerLink="/dashboard">Home</a></li>
-              <li class="breadcrumb-item active">{{ pageTitle }}</li>
-            </ol>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb float-sm-end">
+                <li class="breadcrumb-item"
+                    *ngFor="let breadcrumb of breadcrumbs; let last = last"
+                    [class.active]="last">
+                  <a *ngIf="breadcrumb.url && !last" [routerLink]="breadcrumb.url">{{ breadcrumb.label }}</a>
+                  <span *ngIf="!breadcrumb.url || last">{{ breadcrumb.label }}</span>
+                </li>
+              </ol>
+            </nav>
           </div>
         </div>
       </div>

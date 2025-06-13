@@ -72,6 +72,7 @@
   margin-bottom: 0.125rem;
   white-space: nowrap;
   position: relative;
+  transition: all 0.3s ease;
 }
 
 .nav-sidebar .nav-link:hover {
@@ -94,7 +95,7 @@
   margin-right: 0.75rem;
   text-align: center;
   width: 1.6rem;
-  flex-shrink: 0; /* Prevent icon from shrinking */
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -128,6 +129,8 @@
 .nav-treeview {
   margin-left: 0;
   padding-left: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .nav-treeview .nav-link {
@@ -154,7 +157,7 @@
   margin-left: 0.5rem;
 }
 
-.nav-link .fas.fa-angle-left.right.rotate {
+.nav-link .fas.fa-angle-left.right.rotate-90 {
   transform: rotate(-90deg);
 }
 

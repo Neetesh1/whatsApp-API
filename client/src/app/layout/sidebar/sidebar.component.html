@@ -3,7 +3,7 @@
   <!-- Brand Logo -->
   <a routerLink="/dashboard" class="brand-link">
     <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="WhatsApp API Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-    <span class="brand-text font-weight-light">WhatsApp API</span>
+    <span class="brand-text font-weight-light">WhatsApp Tickets</span>
   </a>
 
   <!-- Sidebar -->
@@ -27,10 +27,10 @@
             <i class="nav-icon fas fa-ticket-alt"></i>
             <p>
               Tickets
-              <i class="fas fa-angle-left right" [class.rotate]="isMenuOpen('tickets')"></i>
+              <i class="fas fa-angle-left right" [class.rotate-90]="isMenuOpen('tickets')"></i>
             </p>
           </a>
-          <ul class="nav nav-treeview" [style.display]="isMenuOpen('tickets') ? 'block' : 'none'">
+          <ul class="nav nav-treeview" [@slideInOut]="isMenuOpen('tickets') ? 'in' : 'out'">
             <li class="nav-item">
               <a routerLink="/tickets" class="nav-link" [class.active]="currentPath === '/tickets'">
                 <i class="far fa-circle nav-icon"></i>
@@ -60,10 +60,10 @@
             <i class="nav-icon fab fa-whatsapp"></i>
             <p>
               WhatsApp
-              <i class="fas fa-angle-left right" [class.rotate]="isMenuOpen('whatsapp')"></i>
+              <i class="fas fa-angle-left right" [class.rotate-90]="isMenuOpen('whatsapp')"></i>
             </p>
           </a>
-          <ul class="nav nav-treeview" [style.display]="isMenuOpen('whatsapp') ? 'block' : 'none'">
+          <ul class="nav nav-treeview" [@slideInOut]="isMenuOpen('whatsapp') ? 'in' : 'out'">
             <li class="nav-item">
               <a routerLink="/whatsapp/status" class="nav-link" [class.active]="currentPath === '/whatsapp/status'">
                 <i class="far fa-circle nav-icon"></i>
@@ -92,10 +92,10 @@
             <i class="nav-icon fas fa-users"></i>
             <p>
               User Management
-              <i class="fas fa-angle-left right" [class.rotate]="isMenuOpen('users')"></i>
+              <i class="fas fa-angle-left right" [class.rotate-90]="isMenuOpen('users')"></i>
             </p>
           </a>
-          <ul class="nav nav-treeview" [style.display]="isMenuOpen('users') ? 'block' : 'none'">
+          <ul class="nav nav-treeview" [@slideInOut]="isMenuOpen('users') ? 'in' : 'out'">
             <li class="nav-item">
               <a routerLink="/users" class="nav-link" [class.active]="currentPath === '/users'">
                 <i class="far fa-circle nav-icon"></i>
@@ -121,22 +121,6 @@
 
         <!-- Divider - Admin Only -->
         <li class="nav-header" *ngIf="isAdmin()">SYSTEM</li>
-
-        <!-- Documentation - Admin Only -->
-        <!-- <li class="nav-item" *ngIf="isAdmin()">
-          <a href="#" class="nav-link" (click)="$event.preventDefault()">
-            <i class="nav-icon fas fa-book"></i>
-            <p>Documentation</p>
-          </a>
-        </li> -->
-
-        <!-- Support - Admin Only -->
-        <!-- <li class="nav-item" *ngIf="isAdmin()">
-          <a href="#" class="nav-link" (click)="$event.preventDefault()">
-            <i class="nav-icon fas fa-life-ring"></i>
-            <p>Support</p>
-          </a>
-        </li> -->
 
         <!-- Logout -->
         <li class="nav-item">
