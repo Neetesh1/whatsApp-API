@@ -7,22 +7,54 @@ const bcrypt = require('bcryptjs');
 // Authentication endpoint
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  
+  // Input validation
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+  
   try {
+    // Test database connection first
+    await pool.query('SELECT 1');
+    
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+    console.log(`Login attempt for username: ${username}`);
+    console.log(`User found in database: ${result.rows.length > 0}`);
+    
     if (result.rows.length > 0) {
       const user = result.rows[0];
+      console.log(`Stored password hash: ${user.password.substring(0, 20)}...`);
+      console.log(`Input password: ${password}`);
+      
       const passwordMatch = await bcrypt.compare(password, user.password);
+      console.log(`Password match result: ${passwordMatch}`);
+      
       if (passwordMatch) {
+        if (!process.env.JWT_SECRET) {
+          console.error('JWT_SECRET is not defined in environment variables');
+          throw new Error('JWT_SECRET is not defined');
+        }
         const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        console.log('Login successful, token generated');
         res.json({ token });
       } else {
+        console.log('Password does not match');
         res.status(401).json({ error: 'Invalid credentials' });
       }
     } else {
+      console.log('User not found in database');
       res.status(401).json({ error: 'Invalid credentials' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error('Login error:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Check if it's a database connection error
+    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+      res.status(500).json({ error: 'Database connection failed', details: 'Please check database configuration' });
+    } else {
+      res.status(500).json({ error: 'Server error', details: error.message });
+    }
   }
 });
 

@@ -5,7 +5,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
-require('dotenv').config({ path: './config/.env' });
+require('dotenv').config({ path: '../config/.env' }); // Fix dotenv path
+
+// Debug: Check if JWT_SECRET is loaded
+console.log('JWT_SECRET loaded:', process.env.JWT_SECRET ? 'Yes' : 'No');
+console.log('JWT_SECRET value:', process.env.JWT_SECRET ? `${process.env.JWT_SECRET.substring(0, 10)}...` : 'undefined');
 
 const app = express();
 const server = http.createServer(app);
