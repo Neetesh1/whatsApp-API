@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 // Authentication endpoint
 router.post('/login', async (req, res) => {
@@ -10,7 +11,8 @@ router.post('/login', async (req, res) => {
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     if (result.rows.length > 0) {
       const user = result.rows[0];
-      if (password === user.password) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (passwordMatch) {
         const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
       } else {
@@ -44,9 +46,10 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ error: 'Username already exists' });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     const insertUser = await pool.query(
       'INSERT INTO users (username, password, role) VALUES ($1, $2, $3) RETURNING id, username, role',
-      [username, password, role || 'user']
+      [username, hashedPassword, role || 'user']
     );
     
     res.status(201).json(insertUser.rows[0]);

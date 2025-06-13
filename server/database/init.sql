@@ -28,10 +28,11 @@ CREATE TABLE IF NOT EXISTS replies (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert sample users (passwords should be hashed in production)
+-- Insert sample users (passwords are hashed in production using bcrypt)
+-- NOTE: These are placeholder hashed values. In a real environment, hash passwords using bcrypt before insertion.
 INSERT INTO users (username, password, email, role) 
 VALUES 
-  ('admin', 'admin123', 'admin@example.com', 'admin'),
-  ('user1', 'user123', 'user1@example.com', 'user'),
-  ('manager', 'manager123', 'manager@example.com', 'manager')
+  ('admin', '$2a$10$placeholder_hash_for_admin123', 'admin@example.com', 'admin'),
+  ('user1', '$2a$10$placeholder_hash_for_user123', 'user1@example.com', 'user'),
+  ('manager', '$2a$10$placeholder_hash_for_manager123', 'manager@example.com', 'manager')
 ON CONFLICT (username) DO NOTHING;

@@ -1,0 +1,120 @@
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand navbar-dark navbar-gray-dark">
+  <!-- Left navbar links -->
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" data-lte-toggle="sidebar-full" href="#" role="button">
+        <i class="fas fa-bars"></i>
+      </a>
+    </li>
+    <li class="nav-item d-none d-sm-inline-block">
+      <a href="#" class="nav-link" (click)="$event.preventDefault(); navigateToDashboard()">Home</a>
+    </li>
+    <li class="nav-item d-none d-sm-inline-block">
+      <a href="#" class="nav-link" (click)="$event.preventDefault(); navigateToTickets()">Tickets</a>
+    </li>
+  </ul>
+
+  <!-- Search Form -->
+  <form class="form-inline ms-3 d-none d-md-flex">
+    <div class="input-group">
+      <input class="form-control form-control-navbar" type="search" placeholder="Search Tickets" aria-label="Search">
+      <div class="input-group-append">
+        <button class="btn btn-navbar" type="submit">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Right navbar links -->
+  <ul class="navbar-nav ms-auto">
+    <!-- Messages Dropdown Menu -->
+    <li class="nav-item dropdown">
+      <a class="nav-link" data-lte-toggle="dropdown" href="#">
+        <i class="far fa-comments"></i>
+        <span class="badge badge-danger navbar-badge">{{ unreadMessages }}</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+        <a href="#" class="dropdown-item" *ngFor="let message of recentMessages">
+          <!-- Message Start -->
+          <div class="media">
+            <img [src]="message.avatarUrl" alt="User Avatar" class="img-size-50 me-3 img-circle">
+            <div class="media-body">
+              <h3 class="dropdown-item-title">
+                {{ message.sender }}
+                <span class="float-end text-sm text-danger"><i class="fas fa-star"></i></span>
+              </h3>
+              <p class="text-sm">{{ message.content }}</p>
+              <p class="text-sm text-muted"><i class="far fa-clock me-1"></i> {{ message.time }}</p>
+            </div>
+          </div>
+          <!-- Message End -->
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item dropdown-footer" (click)="$event.preventDefault(); navigateToMessages()">See All Messages</a>
+      </div>
+    </li>
+
+    <!-- Notifications Dropdown Menu -->
+    <li class="nav-item dropdown">
+      <a class="nav-link" data-lte-toggle="dropdown" href="#">
+        <i class="far fa-bell"></i>
+        <span class="badge badge-warning navbar-badge">{{ notificationCount }}</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+        <span class="dropdown-item dropdown-header">{{ notificationCount }} Notifications</span>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item" *ngFor="let notification of notifications">
+          <i [class]="notification.iconClass"></i> {{ notification.text }}
+          <span class="float-end text-muted text-sm">{{ notification.time }}</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item dropdown-footer" (click)="$event.preventDefault(); navigateToNotifications()">See All Notifications</a>
+      </div>
+    </li>
+
+    <!-- WhatsApp Status Indicator -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" (click)="$event.preventDefault(); toggleWhatsAppStatus()" [title]="whatsappConnected ? 'WhatsApp Connected' : 'WhatsApp Disconnected'">
+        <i class="fab fa-whatsapp" [ngClass]="{'text-success': whatsappConnected, 'text-danger': !whatsappConnected}"></i>
+      </a>
+    </li>
+
+    <!-- Fullscreen Button -->
+    <li class="nav-item">
+      <a class="nav-link" data-lte-toggle="fullscreen" href="#" role="button">
+        <i class="fas fa-expand-arrows-alt"></i>
+      </a>
+    </li>
+
+    <!-- User Dropdown Menu -->
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-lte-toggle="dropdown" href="#">
+        <i class="fas fa-user"></i>
+        <span class="d-none d-md-inline">{{ getUserName() }}</span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a href="#" class="dropdown-item" (click)="$event.preventDefault(); navigateToProfile()">
+            <i class="fas fa-user-circle me-2"></i> Profile
+          </a>
+        </li>
+        <li>
+          <a href="#" class="dropdown-item" (click)="$event.preventDefault(); navigateToSettings()">
+            <i class="fas fa-cog me-2"></i> Settings
+          </a>
+        </li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li>
+          <a href="#" class="dropdown-item" (click)="$event.preventDefault(); logout()">
+            <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+          </a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+<!-- /.navbar -->
