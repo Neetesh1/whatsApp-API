@@ -1,0 +1,144 @@
+/* Header navbar positioning fixes */
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 250px; /* Account for sidebar width */
+  right: 0;
+  z-index: 1030;
+  height: 3.5rem;
+  transition: left 0.3s ease-in-out;
+}
+
+/* Navbar container fixes */
+.navbar {
+  padding: 0;
+  min-height: 3.5rem;
+}
+
+/* Left navbar navigation */
+.navbar-nav {
+  flex-direction: row;
+  margin-left: 0;
+}
+
+.navbar-nav .nav-item {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-nav .nav-link {
+  padding: 0.5rem 1rem;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  height: 3.5rem;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Right navbar navigation */
+.navbar-nav.ml-auto {
+  margin-left: auto !important;
+}
+
+/* Pushmenu button styling */
+.navbar-nav .nav-link[data-widget="pushmenu"] {
+  cursor: pointer;
+}
+
+.navbar-nav .nav-link[data-widget="pushmenu"]:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown menu positioning */
+.navbar-nav .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: auto;
+  z-index: 1040;
+  margin-top: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Badge positioning in navbar */
+.navbar-badge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  font-size: 0.6rem;
+  font-weight: 300;
+  padding: 0.2rem 0.4rem;
+}
+
+/* WhatsApp status badge */
+.nav-link .badge {
+  margin-left: 0.25rem;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.3rem;
+}
+
+/* User menu adjustments */
+.navbar-nav .nav-link .d-none.d-md-inline {
+  margin-left: 0.5rem;
+}
+
+/* Responsive adjustments for header */
+@media (max-width: 991.98px) {
+  .main-header {
+    left: 0; /* Full width on mobile */
+  }
+}
+
+/* Sidebar collapse adjustments */
+body.sidebar-collapse .main-header {
+  left: 4.6rem; /* Adjust for collapsed sidebar */
+}
+
+/* Ensure proper z-index stacking */
+.dropdown-menu-lg {
+  min-width: 280px;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Media object fixes for dropdown */
+.media {
+  display: flex;
+  align-items: flex-start;
+}
+
+.media-body {
+  flex: 1;
+  margin-left: 0.75rem;
+}
+
+/* Dropdown header styling */
+.dropdown-header {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+/* Dropdown footer styling */
+.dropdown-footer {
+  text-align: center;
+  font-size: 0.875rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+.dropdown-footer:hover {
+  background-color: #e9ecef;
+  text-decoration: none;
+}

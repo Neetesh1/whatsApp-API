@@ -58,40 +58,6 @@
   color: #fff !important;
 }
 
-/* Search form styling */
-.form-inline {
-  padding: 0.375rem 0.75rem;
-}
-
-.form-control-sidebar {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
-
-.form-control-sidebar:focus {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #fff;
-  box-shadow: none;
-}
-
-.form-control-sidebar::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.btn-sidebar {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
-
-.btn-sidebar:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #fff;
-}
-
 /* Navigation styling fixes */
 .nav-sidebar .nav-item {
   margin-bottom: 0;

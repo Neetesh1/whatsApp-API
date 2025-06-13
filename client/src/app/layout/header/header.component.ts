@@ -137,8 +137,11 @@ export class HeaderComponent implements OnInit {
 
   toggleSidebar(): void {
     const body = document.querySelector('body');
-    if (body) {
-      body.classList.toggle('sidebar-collapse');
+    const sidebar = document.querySelector('.main-sidebar');
+
+    if (body && sidebar) {
+      // Toggle sidebar visibility
+      body.classList.toggle('sidebar-hidden');
     }
   }
 }

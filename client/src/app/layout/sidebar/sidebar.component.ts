@@ -77,6 +77,10 @@ export class SidebarComponent implements OnInit {
     return this.currentPath.startsWith(path);
   }
 
+  isAdmin(): boolean {
+    return this.currentUser?.role === 'admin';
+  }
+
   logout(): void {
     this.authService.logout();
   }
